@@ -21,7 +21,7 @@ export type PlayerBody = {
 };
 
 export type Client = {
-  clientConnectionId: string;
+  clientId: string;
 };
 
 export type Room = {
