@@ -11,3 +11,4 @@ export function removeClient(client: Client): void {
     if (index.clientId !== client.clientId) return index;
   });
 }
+
