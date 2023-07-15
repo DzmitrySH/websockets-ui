@@ -1,16 +1,11 @@
-import { WebSocketServer } from "ws";
-import { UpdateRooms, Player, ShipPos, AvailableType } from '../interface/type';
-
-export function sendResponseForAllClients(response: UpdateRooms) {
-  const server = new WebSocketServer({});
-  console.log("Response: ", JSON.stringify(response));
-  server.clients.forEach((client) => client.send(JSON.stringify(response)));
-}
+import { getPlayerId } from '../db/Dbset';
+import { Player, ShipPos, AvailableType } from '../interface/type';
 
 export function senderResponse(clientList: Player[], responseType: string, payload: any): void {
   clientList.forEach((client) => {
     let response: {};
-
+    const { ws } = getPlayerId(client.index) as Player;
+    
     if (responseType === AvailableType.CreateGame) {
       const { idGame } = payload;
       response = {
@@ -23,7 +18,7 @@ export function senderResponse(clientList: Player[], responseType: string, paylo
       };
 
       console.log(JSON.stringify(response));
-      // ws!.send(JSON.stringify(response));
+      ws!.send(JSON.stringify(response));
     }
 
     if (responseType === AvailableType.StartGame) {
@@ -38,7 +33,7 @@ export function senderResponse(clientList: Player[], responseType: string, paylo
       };
 
       console.log(JSON.stringify(response));
-      // ws!.send(JSON.stringify(response));
+      ws!.send(JSON.stringify(response));
     }
   });
 }
