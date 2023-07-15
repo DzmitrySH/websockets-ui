@@ -1,4 +1,5 @@
 import WebSocket, { WebSocketServer }from "ws";
+import { senderResponse } from "../websocket/senderResponse";
 import {
   Client,
   Room,
@@ -55,7 +56,7 @@ export function createRoom(clienId: string) {
   const newRoom: Room = {
     roomId: clienId,
     roomUsers: [ { name, index, } ],
-    game: { idGame: clienId, shipsPositions: [] }
+    game: { idGame: clienId, shipsPos: [] }
   };
 
   rooms.push(newRoom as Room);
@@ -63,14 +64,14 @@ export function createRoom(clienId: string) {
 }
 
 
-export function deleteRoom(clientId: string): void {
+function deleteRoom(clientId: string): void {
   rooms = rooms.filter((room) => {
     if (room.roomId !== clientId) return room;
   });
   updateRoomAll();
 }
 
-export function playerDeleteRom(id: string) {
+function playerDeleteRom(id: string) {
   rooms.map((room) => {
     if (room.roomUsers?.some((user) => user.index === id)) {
       room.roomUsers = room.roomUsers.filter((user) => {
@@ -81,14 +82,48 @@ export function playerDeleteRom(id: string) {
   deleteRoom(id);
 }
 
+function createGame(indexRoom: string): void {
+  const idx = rooms.findIndex((room) => room.roomId === indexRoom);
+  senderResponse(rooms[idx]?.roomUsers as Player[], AvailableType.CreateGame, { idGame: indexRoom });
+}
+
 export function addUserToRoom(clientId: string, request: Request): void {
   const { indexRoom } = JSON.parse(request.data);
   const { name, index } = getPlayerId(clientId) as Player;
   rooms.map((room, idx) => {
     if (room.roomId === indexRoom) {
       if (rooms[idx]?.roomUsers?.some((user) => user.index === index)) return;
-      rooms[idx]?.roomUsers?.push({ name, index });
-      deleteRoom(clientId);
+        rooms[idx]?.roomUsers?.push({ name, index });
+        deleteRoom(clientId);
+    }
+    if (rooms[idx]?.roomUsers?.length === 2) {
+      createGame(room.roomId);
     }
   });
 }
+
+function startGame(roomId: string): void {
+  const room = rooms.find((room) => room.roomId === roomId) as Room;
+  const { roomUsers } = room;
+  const shipsPos = room.game?.shipsPos as ShipPos[];
+  senderResponse(roomUsers as Player[], AvailableType.StartGame, shipsPos as ShipPos[]);
+}
+
+export function addShips(request: Request): void {
+  const requestShip = JSON.parse(request.data);
+  const { gameId, indexPlayer } = requestShip;
+
+  const ships: Ships = [...requestShip.ships] as Ships;
+  const roomIndex: number | undefined = rooms.findIndex((room) => room.game?.idGame === gameId);
+
+  rooms[roomIndex]?.game.shipsPos.push({
+    ships: [...ships],
+    indexPlayer,
+  })
+
+  if (rooms[roomIndex]?.game.shipsPos.length === 2) {
+    const roomId = rooms[roomIndex]?.roomId;
+    startGame(roomId as string);
+  }
+}
+

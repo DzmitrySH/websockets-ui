@@ -38,7 +38,7 @@ export type UpdateRooms = {
 
 export type Game = {
   idGame: number | string;
-  shipsPositions: ShipPos[];
+  shipsPos: ShipPos[];
 };
 
 export type ShipPos = {

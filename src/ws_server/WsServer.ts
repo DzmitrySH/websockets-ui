@@ -3,7 +3,7 @@ import { randomBytes } from "crypto";
 import { addClient, removeClient  } from '../db/Dbset';
 import { Request, AvailableType, ErrorMsg } from '../interface/type';
 import { errorMessges } from '../util/errorMessges';
-import { createRoom, addUserToRoom } from '../db/Dbset';
+import { createRoom, addUserToRoom, addShips } from '../db/Dbset';
 
 export default function wsServer (port: number) {
     const clientId: string = randomBytes(16).toString("hex");
@@ -39,7 +39,7 @@ export default function wsServer (port: number) {
               addUserToRoom(clientId, request)
               break;
             case AvailableType.AddShips:
-              
+              addShips(request);
               break;
             case AvailableType.Attack:
               
