@@ -79,3 +79,8 @@ export enum AvailableType {
   Finish = 'finish',
   UpdateWinners = 'update_winners',
 }
+
+export enum ErrorMsg {
+  RequestType = 'Invalid request type',
+  RequestBody = 'invalid request body',
+}
