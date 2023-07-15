@@ -1,6 +1,6 @@
-import { Server, WebSocketServer, WebSocket } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import { randomBytes } from "crypto";
-import { addClient, removeClient  } from '../db/Dbset';
+import { addClient, removeClient, createPlayer, deletePlayer } from '../db/Dbset';
 import { Request, AvailableType, ErrorMsg } from '../interface/type';
 import { errorMessges } from '../util/errorMessges';
 import { createRoom, addUserToRoom, addShips } from '../db/Dbset';
@@ -30,7 +30,7 @@ export default function wsServer (port: number) {
         try {
           switch (type) {
             case AvailableType.Reg:
-              
+              createPlayer(ws, clientId, request);
               break;
             case AvailableType.CreateRoom:
               createRoom(clientId);  
@@ -57,6 +57,7 @@ export default function wsServer (port: number) {
 
       ws.on("close", () => {
         removeClient({ clientId });
+        deletePlayer(clientId);
         console.log("Connection closed.");
       });
     });

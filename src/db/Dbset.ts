@@ -4,12 +4,14 @@ import {
   Client,
   Room,
   Player,
+  PlayerBody,
   Request,
   Ships,
   ShipPos,
   DbsetPlayer,
   UpdateRooms,
   AvailableType,
+  ErrorMsg,
 } from '../interface/type';
 
 
@@ -58,7 +60,6 @@ export function createRoom(clienId: string) {
     roomUsers: [ { name, index, } ],
     game: { idGame: clienId, shipsPos: [] }
   };
-
   rooms.push(newRoom as Room);
   updateRoomAll();
 }
@@ -83,20 +84,20 @@ function playerDeleteRom(id: string) {
 }
 
 function createGame(indexRoom: string): void {
-  const idx = rooms.findIndex((room) => room.roomId === indexRoom);
-  senderResponse(rooms[idx]?.roomUsers as Player[], AvailableType.CreateGame, { idGame: indexRoom });
+  const indexIn = rooms.findIndex((room) => room.roomId === indexRoom);
+  senderResponse(rooms[indexIn]?.roomUsers as Player[], AvailableType.CreateGame, { idGame: indexRoom });
 }
 
 export function addUserToRoom(clientId: string, request: Request): void {
   const { indexRoom } = JSON.parse(request.data);
   const { name, index } = getPlayerId(clientId) as Player;
-  rooms.map((room, idx) => {
+  rooms.map((room, indexIn) => {
     if (room.roomId === indexRoom) {
-      if (rooms[idx]?.roomUsers?.some((user) => user.index === index)) return;
-        rooms[idx]?.roomUsers?.push({ name, index });
+      if (rooms[indexIn]?.roomUsers?.some((user) => user.index === index)) return;
+        rooms[indexIn]?.roomUsers?.push({ name, index });
         deleteRoom(clientId);
     }
-    if (rooms[idx]?.roomUsers?.length === 2) {
+    if (rooms[indexIn]?.roomUsers?.length === 2) {
       createGame(room.roomId);
     }
   });
@@ -112,7 +113,6 @@ function startGame(roomId: string): void {
 export function addShips(request: Request): void {
   const requestShip = JSON.parse(request.data);
   const { gameId, indexPlayer } = requestShip;
-
   const ships: Ships = [...requestShip.ships] as Ships;
   const roomIndex: number | undefined = rooms.findIndex((room) => room.game?.idGame === gameId);
 
@@ -127,3 +127,50 @@ export function addShips(request: Request): void {
   }
 }
 
+export function deletePlayer(clientId: string): void {
+  players = players.filter((player) => {
+    if (player.index !== clientId) return player;
+  });
+  playerDeleteRom(clientId);
+}
+
+function validatePlayer(player: PlayerBody) {
+  if (!Object.values(player).length || !player.name.length || !player.password.length) return false;
+  if (players.some((el) => el.name == player.name)) return false;
+  return true;
+}
+
+export function createPlayer(ws: WebSocket, clientConnectionId: string, request: Request) {
+  let response;
+  const requestBody: { name: string; password: string } = JSON.parse(request.data);
+  const isValid = validatePlayer(requestBody);
+
+  if (!isValid) {
+    response = {
+      type: request.type,
+      data: JSON.stringify({name: "", index: "", error: true, errorText: ErrorMsg.RequestBody }),
+    };
+
+    console.log("Response: ", JSON.stringify(response));
+    ws.send(JSON.stringify(response));
+    return;
+  }
+
+  const newPlayer: Player = {
+    name: requestBody.name,
+    password: requestBody.password,
+    index: clientConnectionId,
+    ws,
+  };
+  players.push(newPlayer);
+
+  response = {
+    type: request.type,
+    data: JSON.stringify({name: newPlayer.name, index: requestBody.password, error: false, errorText: ""}),
+    id: 0,
+  };
+
+  console.log("Response: ", JSON.stringify(response));
+  ws.send(JSON.stringify(response));
+  updateRoomAll();
+}
