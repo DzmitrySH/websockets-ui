@@ -26,7 +26,7 @@ export interface AddChips {
   type: "add_ships",
   data:{
     gameId: number,
-    ships:[{
+    ships:{
       position: {
         x: number,
         y: number,
@@ -34,7 +34,7 @@ export interface AddChips {
       direction: boolean,
       length: number,
       type: "small"|"medium"|"large"|"huge",
-    }],
+    } [],
     indexPlayer: number,
   },
   id: number,

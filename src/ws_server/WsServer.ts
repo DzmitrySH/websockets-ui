@@ -1,7 +1,7 @@
 import { Server, WebSocketServer } from 'ws';
 // import Game from '../game/index';
 
-export default function WsServer (port: number) {
+export default function wsServer (port: number) {
     const server = new WebSocketServer({ port });
   //  const game = new Game();
 

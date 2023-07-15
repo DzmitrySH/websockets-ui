@@ -30,24 +30,21 @@ export interface CreateGame{
 
 export interface UpdateRoom {
   type: "update_room",
-  data: { [ {
+  data: { 
     roomId: number,
-    roomUsers: [
+    roomUsers: 
     {
       name: string,
       index: number,
-    }
-        ],
-      },
-    ]
-  },
+    } [],
+  } [],
   id: number,
 }
 
 export interface  StartGame{
   type: "start_game",
   data: {
-    ships:[ {
+    ships:{
         position: {
           x: number,
           y: number,
@@ -55,8 +52,7 @@ export interface  StartGame{
         direction: boolean,
         length: boolean,
         type: "small"|"medium"|"large"|"huge",
-      }
-    ],
+      } [],
     currentPlayerIndex: number,
   },
   id: number,
