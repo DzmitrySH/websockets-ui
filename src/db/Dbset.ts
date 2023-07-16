@@ -1,5 +1,6 @@
-import WebSocket, { WebSocketServer }from "ws";
+import WebSocket from "ws";
 import { senderResponse } from "../websocket/senderResponse";
+import { wbsckServer } from "../ws_server";
 import {
   Client,
   Room,
@@ -35,12 +36,11 @@ export function getPlayerId(id: string): Player | void {
 }
 
 function responseAll(response: UpdateRooms) {
-  const server = new WebSocketServer({});
   console.log("Response: ", JSON.stringify(response));
-  server.clients.forEach((client) => client.send(JSON.stringify(response)));
+  wbsckServer.clients.forEach((client) => client.send(JSON.stringify(response)));
 }
 
-export function updateRoomAll(): void {
+function updateRoomAll(): void {
   const response = {
     type: AvailableType.UpdateRoom,
     data: JSON.stringify(
@@ -174,3 +174,4 @@ export function createPlayer(ws: WebSocket, clientConnectionId: string, request:
   ws.send(JSON.stringify(response));
   updateRoomAll();
 }
+

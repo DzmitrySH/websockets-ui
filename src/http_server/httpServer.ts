@@ -1,6 +1,6 @@
 import { readFile } from 'fs';
 import { resolve, dirname } from 'path';
-import { createServer, Server } from 'http';
+import { createServer } from 'http';
 
 export default function httpServer(port: number) {
   const server = createServer((req, res) => {
