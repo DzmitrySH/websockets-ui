@@ -3,11 +3,9 @@
     "version": "1.0.0",
     "description": "Template for the WebSocket Batlechip",
     "scripts": {
-        "build": "webpack",
         "format": "prettier --write \"./**/*.ts\"",
         "lint": "eslint \"./**/*.ts\" --fix",
-        "start:dev": "tsnd --respawn --transpile-only ./index.ts",
-        "start": "npm run build && node ./dist/main.js"
+        "start:dev": "tsnd --respawn --transpile-only ./index.ts"
     },
     "author": "Dzmitry Shive",
     "keywords": [],
