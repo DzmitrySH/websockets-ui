@@ -13,6 +13,7 @@ import {
   UpdateRooms,
   AvailableType,
   ErrorMsg,
+  AttackData,
 } from '../interface/type';
 
 
@@ -175,3 +176,29 @@ export function createPlayer(ws: WebSocket, clientConnectionId: string, request:
   updateRoomAll();
 }
 
+export function attackShips(ws: WebSocket, clienId: string,  request: Request) {
+  const requestAttack = JSON.parse(request.data);
+  const { gameId, x, y, indexPlayer } = requestAttack as AttackData;
+
+  let response = 'no implement';
+  let x1: number, y1: number;
+
+  const pl = getPlayerId(clienId) as Player;
+  const somePlayer = players.find((player) => player.index === indexPlayer);
+  const enemyPlayer = players.find((player) => player.index !== indexPlayer);
+
+  if (x === undefined || y === undefined) {
+      x1 = Math.floor(Math.random() * 10);
+      y1 = Math.floor(Math.random() * 10);
+  }
+  
+  if(pl === somePlayer) {
+
+  } else {
+
+  }
+
+  console.log("Response: ", JSON.stringify(response));
+  ws.send(JSON.stringify(response));
+  // responseAll(response);
+}

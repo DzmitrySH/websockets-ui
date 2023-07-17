@@ -35,5 +35,9 @@ export function senderResponse(clientList: Player[], responseType: string, paylo
       console.log(JSON.stringify(response));
       ws!.send(JSON.stringify(response));
     }
+
+    if(responseType === AvailableType.Attack) {
+      
+    }
   });
 }

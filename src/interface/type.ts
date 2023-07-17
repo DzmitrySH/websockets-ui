@@ -41,6 +41,19 @@ export type Game = {
   shipsPos: ShipPos[];
 };
 
+export type Winner = {
+  playerId: number;
+  name: string;
+  wins: number;
+}
+
+export type AttackData = {
+  gameId: number;
+  x: number;
+  y: number;
+  indexPlayer: string;
+}
+
 export type ShipPos = {
   ships: Ships;
   indexPlayer: string;
@@ -58,11 +71,31 @@ export type Ship = {
   type: ShipType;
 };
 
+export type Position = {
+  x: number;
+  y: number;
+}
+
+export interface Cell extends Position {
+  killed: boolean;
+}
+
+export interface ShipCells extends Ship {
+  cells: Cell[];
+  killed: boolean;
+}
+
+export enum StatusAttack {
+  Miss = "miss",
+  Killed = "killed",
+  Shot = "shot",
+}
+
 export enum ShipType {
-  small,
-  medium,
-  large,
-  huge,
+  small = 'small',
+  medium = 'medium',
+  large = 'large',
+  huge = 'huge',
 }
 
 export enum AvailableType {
